@@ -1,0 +1,896 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    list-style-type: none;
+  }
+  .clr {
+    margin: 0;
+    padding: 0;
+    clear: both;
+  }
+  .container-site {
+    margin-top: 20px;
+    max-width: 1500px;
+    margin: auto;
+  }
+  li {
+    display: inline-block;
+    margin: 8px;
+    margin-top: 38px;
+  }
+  .headsection h1 {
+    color: rgb(55, 155, 155);
+    font-size: 3.5rem;
+    padding-bottom: 1.5rem;
+  }
+  .headsection h2 {
+    padding-bottom: 1.5rem;
+  }
+  
+  .links-logo {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px;
+    gap: 2rem;
+    margin-top: -5px;
+  }
+  .links-logo li {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    color: #000000;
+  }
+  .links-logo a {
+    color: black;
+  }
+  .links-logo li:hover {
+    line-height: 10px;
+    text-decoration: underline;
+    background-color: aqua;
+    cursor: pointer;
+  }
+  .logo {
+    float: left;
+    margin: 10px;
+    margin-top: 3px;
+    margin-right: 0;
+    border-radius: 50px;
+  }
+  
+  .bgimage {
+    /* position: relative; */
+    display: flex;
+    flex-wrap: wrap;
+    background-image: url(../img/Bg.jpg);
+    background-attachment: fixed;
+    /* background: url(https://theembazaar.com/demo/vivotheme/naino-med/assets/images/banner_2.jpg); */
+    background-size: cover;
+    height: 650px;
+    align-items: center;
+    gap: 100px;
+    margin-bottom: 70px;
+  }
+  
+  #navbar {
+    background-color: rgb(161, 126, 213);
+    position: fixed;
+    z-index: 100;
+    width: 93%;
+    margin-left: 4%;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    height: 60px;
+  }
+  .doctor {
+    border-radius: 50%;
+    padding-top: 100px;
+  }
+  
+  .headsection {
+    color: rgb(0, 0, 0);
+    padding: 2rem;
+    margin-right: 0;
+    margin-left: 80px;
+  }
+  
+  .service-flex {
+    display: flex;
+    gap: 10px;
+    height: 30vh;
+  }
+  
+  .flex-item {
+    width: 100%;
+    color: rgb(0, 0, 0);
+    padding: 30px;
+    padding-top: 65px;
+    font-size: 20px;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+    margin-left: 50px;
+    margin-bottom: 10px;
+  }
+  
+  .service-grid {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    height: 70vh;
+  }
+  
+  .grid-item {
+    background-color: aliceblue;
+    color: rgb(0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-family: sans-serif;
+    padding: 70px;
+    border-radius: 30px;
+  }
+  .first-grid-service {
+    grid-column: span 3;
+    background-color: aliceblue;
+  }
+  .big-size {
+    font-size: 38px;
+  }
+  .grid-item-content {
+    text-align: center; /* Center align the content */
+    padding: 20px; /* Add padding as needed */
+    background-color: aliceblue;
+    border-radius: 10px; /* Add rounded corners */
+  }
+  
+  .grid-item-content h3 {
+    font-size: 24px;
+    color: #000000; /* Change the text color */
+    padding-bottom: 10px;
+  }
+  
+  .grid-item-content p {
+    font-size: 16px;
+    color: #000000; /* Change the text color */
+  }
+  .btn {
+    width: 150px;
+    padding: 15px;
+    margin-top: 30px;
+    border-radius: 30px;
+    border: 1px solid rgb(3, 77, 3);
+    background-color: white;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+  }
+  .btn:hover {
+    background-color: rgb(32, 143, 96);
+    border: 1px solid rgb(32, 143, 96);
+    color: white;
+    cursor: pointer;
+  }
+  .our-services {
+    height: 400px;
+    position: relative;
+    margin-top: 800px;
+  }
+  
+  .grid-container1 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 30px;
+  }
+  .grid-item1 {
+    background-color: #f3f9f8;
+    padding: 30px;
+    box-shadow: 10px 5px 5px rgb(89, 207, 164);
+  }
+  .class-span-3 {
+    grid-row: span 3;
+  }
+  
+  .service-info h3 {
+    padding: 20px;
+    padding-bottom: 5px;
+    font-size: 24px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+  }
+  .service-info > p {
+    font-size: 20px;
+    padding-bottom: 40px;
+    text-align: center;
+    color: #fff;
+  }
+  
+  .grid-item1 {
+    text-align: center;
+    font-size: 16px;
+  }
+  .grid-item1 h3 {
+    padding-top: 30px;
+    margin-bottom: 10px;
+  }
+  
+  .stat-main {
+    background-image: url(../img/pexels-cottonbro-studio-6502039.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    height: 500px;
+    position: relative;
+    top: -1690px;
+  }
+  
+  .cover {
+    background-color: rgb(48, 189, 175);
+    height: 500px;
+    margin-top: 90vh;
+    opacity: 0.6;
+    z-index: 10;
+  }
+  .stat-flex {
+    display: flex;
+    gap: 150px;
+    justify-content: center;
+    position: relative;
+    top: 160px;
+  }
+  .elements-stat h1,
+  h3 {
+    color: #0b1e66;
+    font-size: xx-large;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .elements-stat img {
+    margin-left: 20px;
+  }
+  .hover-line {
+    position: relative;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  #doctors {
+    background-color: rgb(55, 155, 155);
+    position: relative;
+    top: -1600px;
+    height: 100vh;
+  }
+  .info-pos {
+    text-align: center;
+    color: #fff;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+      "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  }
+  .info-pos h1 {
+    padding: 30px;
+    padding-top: 60px;
+    padding-bottom: 30px;
+  }
+  .main-doc {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+  }
+  .doc-flex {
+    text-align: center;
+    color: #fff;
+  }
+  .doc-flex h4 {
+    padding: 12px 0px;
+  }
+  .appointment-form {
+    position: relative;
+    text-align: center;
+    width: 800px;
+    height: 400px;
+    top: 40px;
+    background-color: #f3f9f8;
+    z-index: 11;
+    box-sizing: border-box;
+    padding: 30px;
+    box-shadow: -10px 15px 10px rgb(85, 84, 84);
+  }
+  .appointment-form-text h1,
+  p {
+    padding-bottom: 10px;
+  }
+  .appoint-forma {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 30px;
+  }
+  .appoint-forma input,
+  select,
+  button {
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid rgb(48, 189, 175);
+  }
+  .btn1 {
+    border: 1px solid rgb(3, 77, 3);
+    background-color: rgb(48, 189, 175);
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+  }
+  .btn1:hover {
+    background-color: rgb(32, 143, 96);
+    border: 1px solid rgb(32, 143, 96);
+    color: white;
+    cursor: pointer;
+  }
+  .comment {
+    text-align: center;
+  }
+  .comment h1 {
+    padding-bottom: 15px;
+  }
+  #comments {
+    position: relative;
+    top: -1600px;
+    height: 50px;
+    margin-bottom: -1000px;
+  }
+  .pic-comment {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    margin: 100px;
+    margin-top: 60px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+  }
+  .pic-comment img {
+    position: relative;
+    top: -50px;
+    border-radius: 50%;
+    width: 80px;
+    padding: 10px;
+  }
+  .pic-comment h4 {
+    position: relative;
+    top: -50px;
+    color: #fff;
+  }
+  .pic-comment p {
+    padding: 0px 60px;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    color: #fff;
+  }
+  .comment-flex {
+    width: 450px;
+    background-color: rgb(109, 135, 135);
+    height: 300px;
+  }
+  
+  .blog-text {
+    text-align: center;
+    font-size: large;
+    font-family: 'Times New Roman', Times, serif;
+  }
+  #blogs {
+    position: relative;
+    top: -1200px;
+  }
+  .blog-text h1,p{
+    padding: 15px 0px;
+  
+  }
+  .blogs {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+  }
+  .blog {
+    width: 350px;
+    margin-top: 30px;
+    height: 500px;
+    padding: 12px;
+    background-color: rgb(218, 228, 228);
+    text-align: left;
+  }
+  .blog h1,p,a {
+    padding-left:15px;
+    color: #4e4c4c;
+  }
+  .blog img{
+    position: relative;
+    left: -32px;
+    top: -31.5px;
+    width: 375px;
+    height: 300px;
+    padding: 20px;
+    padding-bottom: 0;
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  /*--------------*Contact Page*-------------------*/
+  .links-logo-contact {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px;
+    margin-left: 180px;
+    gap: 2rem;
+  }
+  .contact-top-bg {
+    background-color: rgb(32, 143, 96);
+    width: 91.13%;
+    margin-left: 4.44%;
+  }
+  .links-logo-contact li {
+    margin-top: 22px;
+    padding: 8px;
+    background-color: rgb(0, 0, 0);
+    border-radius: 10px;
+    color: white;
+  }
+  .links-logo-contact a {
+    color: rgb(255, 255, 255);
+  }
+  .links-logo-contact li:hover {
+    line-height: 10px;
+    text-decoration: underline;
+    background-color: aqua;
+    color: #000000;
+    cursor: pointer;
+  }
+  .contact-bg {
+    display: grid;
+    background-color: rgb(55, 155, 155);
+    height: 86.5vh;
+    z-index: 1;
+  }
+  .contact-box-white {
+    position: relative;
+    height: 40vh;
+    width: 60%;
+    margin: auto;
+    padding: 100px;
+    display: grid;
+    background-color: aliceblue;
+    z-index: 2;
+  }
+  .contact-right-bg {
+    position: absolute;
+    width: 180px;
+    height: 67.1vh;
+    right: 0;
+    background-color: rgb(32, 143, 96);
+    margin: auto;
+    z-index: 3;
+  }
+  .contact-info-bg {
+    position: absolute;
+    width: 400px;
+    height: 45vh;
+    top: 80px;
+    right: 0;
+    background-color: rgb(1, 1, 1);
+    margin: auto;
+    z-index: 4;
+    color: #ffffff;
+  }
+  .my-info {
+    display: block;
+    padding: 12px;
+    padding-left: 40px;
+  }
+  .my-info p {
+    display: inline;
+    padding: 10px;
+  }
+  
+  .contact-text {
+    width: 600px;
+    text-align: left;
+    font-family: sans-serif;
+    font-size: 16px;
+    position: relative;
+    top: -50px;
+  }
+  /* .contact-text h1 {
+  } */
+  .forma {
+    width: 600px;
+    text-align: left;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: -50px;
+  }
+  .forma-input {
+    display: block;
+    padding: 0;
+    padding-right: 10px;
+    margin: 30px 0px;
+    text-align: left;
+  }
+  
+  .forma input {
+    border: none;
+    border-bottom: 2px solid rgb(32, 143, 96);
+    background-color: aliceblue;
+    width: 500px;
+    outline: none;
+  }
+  .contact-btn {
+    margin-left: 0;
+    padding-left: 0;
+    background-color: black;
+    color: #ffffff;
+    width: 500px;
+    position: relative;
+    top: -20px;
+  }
+  .social-media {
+    position: absolute;
+    bottom: 20px;
+    right: 27px;
+  }
+  .social-media img {
+    padding: 5px;
+  }
+  .zindex {
+    z-index: 0;
+  }
+  
+  @media (max-width: 1197px) {
+    .headsection {
+      order: 1;
+    }
+    .doctor {
+      margin-left: 150px;
+    }
+  }
+  
+  
+  
+  .main {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #BCAAA4;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .profile {
+    width: 230px;
+    height: 230px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 5px solid #333;
+    display: block;
+    margin: auto;
+    margin-top: 60px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  
+  
+  
+  .profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  h1 {
+    font-size: 35px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .quote {
+    margin: 20px 0;
+    font-size: 25px;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  .wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  
+  .card {
+    margin-bottom:-80px;
+    width: 310px;
+    height: 310px;
+    margin: 1em;
+    padding: 0;
+    perspective: 1500px;
+    border: 2px solid #333;
+    /* Add this line to create a border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Add this line for a box shadow */
+    border-radius: 10px;
+  
+  
+  }
+  
+  .card .front {
+    background-size: 100% 100%;
+    background: rgba(255, 255, 255, 0.0);
+    background-size: cover;
+    background-position: center center;
+  }
+  
+  .card .inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 1.5em;
+    transform: translateZ(80px) scale(0.94);
+  }
+  
+  .card .more {
+    display: none;
+  }
+  
+  .card .more:checked~.content {
+    transform: rotateY(180deg);
+  }
+  
+  .card .content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.75, 0, 0.85, 1);
+  }
+  
+  .card .front,
+  .card .back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    border-radius: 6px;
+  }
+  
+  .card .inner {
+    height: 100%;
+    display: flex;
+    padding: 1.5em;
+    transform: translateZ(80px) scale(0.94);
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+  }
+  
+  .card .front {
+    background-color: #fff;
+    background-size: cover;
+    background-position: center center;
+  }
+  
+  .card .front:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 6px;
+    backface-visibility: hidden;
+  }
+  
+  .card .front h2 {
+    grid-row: 2;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #686868;
+    font-weight: 570;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    font-size: 30px;
+    margin-top: 248px;
+  }
+  
+  .card .back {
+    transform: rotateY(180deg);
+    background-color: #fff;
+    border: 2px solid rgb(240, 240, 240);
+  }
+  
+  .card .back h2 {
+    grid-row: 2;
+    margin-bottom: 0.3em;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #355cc9;
+    font-weight: 450;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card .back .description {
+    font-size: 1.2em;
+    font-weight: bolder;
+    line-height: 1.4em;
+    color: black;
+    white-space: pre-line;
+    text-align: center;
+    margin-top: -100px;
+    margin-bottom: 20px;
+    /*Adds a 20-pixel margin at the bottom of <p> elements  */
+    /* margin: -30px 0 10px;  */
+    /* margin-bottom: 40px; */
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .card .back .inner {
+    height: 100%;
+    display: grid;
+    padding: 1.5em;
+    transform: translateZ(80px) scale(0.94);
+    position: relative;
+  }
+  
+  .card .back .inner .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    /* Add this line */
+  
+  }
+  
+  
+  
+  .card .back .inner .button:hover {
+    background-color: #fff;
+    box-shadow: none;
+    text-shadow: none;
+    color: #355cc9;
+  }
+  
+  .button {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    cursor: pointer;
+    display: block;
+    padding: 0 1.5em;
+    height: 3em;
+    line-height: 2.9em;
+    min-width: 3em;
+    background-color: transparent;
+    border: solid 2px #fff;
+    color: #fff;
+    border-radius: 4px;
+    text-align: center;
+    backface-visibility: hidden;
+    transition: 0.3s ease-in-out;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  
+  .card1 .front {
+    background-image: url('Trikonasana.jpg');
+  }
+  
+  .card2 .front {
+    background-image: url('Virabadrasana.png');
+  }
+  
+  .card3.front {
+    background-image: url('Vrikshasana.png');
+  }
+  
+  
+  
+  
+  
+  .button.view-details {
+    position: absolute;
+    bottom: -30px;
+    /* Adjust the desired distance from the bottom */
+    left: 50%;
+    /* Center horizontally within the .button-container */
+    transform: translateX(-50%);
+    /* Center horizontally */
+    width: 200px;
+    /* Set the desired width */
+    height: 40px;
+    /* Set the desired height */
+    text-align: center;
+    /* Center text horizontally within the button */
+    line-height: 40px;
+    /* Center text vertically within the button */
+  
+    border: 2px solid black;
+    /* Add this line to create a white border */
+    color: black;
+  
+  
+  }
+  
+  
+  .card .more:hover~.content {
+    transform: rotateY(180deg);
+  }
+  
+  .card .back .inner .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    bottom: -30px;
+  }
+  
+  .card .content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.75, 0, 0.85, 1);
+  }
+  
+  .card .content:hover {
+    transform: rotateY(180deg);
+  }
+  
+  /* .card .back .inner .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      bottom: -30px;
+    } */
+  
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    /* Adjust the alignment as needed */
+    margin: 0 -15px;
+    /* Add negative margin to space out the cards */
+  }
+  
+  .text-center {
+    text-align: center;
+  }
