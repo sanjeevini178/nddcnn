@@ -1,3 +1,8 @@
 tensorflow
 numpy
 flask
+pymongo
+pillow
+uuid
+pathlib
+transformers
