@@ -13,7 +13,7 @@
 <body>
     <nav id="navbar" class="container-site">      
             <ul><div id="navbar-ul">
-                <li><h1 style="color:#fff; margin-top: -15px;">NeuroDetect</h1></li>
+                <li><h1 style="color:#fff;margin-top: -10px;">NeuroDetect</h1></li>
                 <li><a href="{{ url_for('index') }}" style="color:#fff">Home</a></li>
                 <li><a href="#about" style="color:#fff">About</a></li>
                 <li><a href="#hd-predict" style="color:#fff">HD Predict</a></li>
@@ -31,6 +31,12 @@
             </div>
             <!-- <div style="margin-left: 20px;"><img class="doctor" src="https://theembazaar.com/demo/vivotheme/naino-med/assets/images/doctor_banner.png" alt="Doctor" width="400px" >
             </div> -->
+            <br><br>
+            <div style="margin-top:250px;">
+                <form action="/main" method="post">
+                    <input type="submit" value="Predict" class="bn15">
+                </form>
+            </div>
         </div>
     </div>  
     </header>

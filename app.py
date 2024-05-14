@@ -60,6 +60,10 @@ def index():
 def home():
     return render_template('login.html')
 
+@app.route('/main', methods=['POST'])
+def main():
+    return render_template('main.html')
+
 #Allow files with IMGension png, jpg and jpeg
 ALLOWED_IMG = set(['jpg' , 'jpeg' , 'png'])
 ALLOWED_FILE = set(['csv'])
