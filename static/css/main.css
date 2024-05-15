@@ -28,7 +28,7 @@ fonts
     padding: 10px 40px 10px 40px;
     position: relative;
     border: 3px solid #ffffff;
-    border-radius: 20px;
+    
     background-color: transparent;
     transition: background-color 0.3s ease;
 }
@@ -947,4 +947,7 @@ fonts
   
   .text-center {
     text-align: center;
+  }
+  .footer {
+    height: fit-content;
   }

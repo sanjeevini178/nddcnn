@@ -16,8 +16,12 @@
                 <li><h1 style="color:#fff;margin-top: -10px;">NeuroDetect</h1></li>
                 <li><a href="{{ url_for('index') }}" style="color:#fff">Home</a></li>
                 <li><a href="#about" style="color:#fff">About</a></li>
-                <li><a href="#hd-predict" style="color:#fff">HD Predict</a></li>
-                <li><a href="#gait-predict" style="color:#fff">Gait Analysis</a></li>
+                <li>
+                    <form action="/main" method="post" id="toPredict">
+                        <a href="#" onclick="document.getElementById('toPredict').submit();" style="color: #fff;">Predict</a>
+                    </form>
+                    </li>
+ <!--                <li><a href="#gait-predict" style="color:#fff">Gait Analysis</a></li> -->
                 <li><a href="#footer" style="color:#fff">Contact Us</a></li>
             </div>
              </ul>
@@ -150,11 +154,13 @@
     <div class="container">
         <div class="row">
             
-            <div class="col-md-5">
-                <h3>Contact Us</h3>
-                <p>Dept: Information Technology</p>
-                <p>Clg: SSN College of Engineering</p>
-            </div>
+            
+                <center>
+                <h3>Developed by</h3>
+                <p>Students of Information Technology</p>
+                <p>SSN College of Engineering</p>
+            </center>
+                
         </div>
     </div>
     <div class="text-center">
