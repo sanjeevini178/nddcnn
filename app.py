@@ -1,21 +1,36 @@
 from flask import Flask, render_template, request, redirect, url_for
-# from tensorflow.keras.models import load_model
+
 import numpy as np
-# from tensorflow.keras.preprocessing.image import load_img
-# from tensorflow.keras.applications.vgg16 import preprocess_input
+
 import os
-# from tensorflow.keras.preprocessing import image
+import torch
 from PIL import Image
 from transformers import pipeline
 from pathlib import Path
 import uuid
 import pymongo
+from scipy.stats import skew, kurtosis
+import pandas as pd
 
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ['PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION'] = 'python'
+
+from tensorflow.keras.models import load_model
+from tensorflow.keras.optimizers import RMSprop
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+# Load model directly
+from transformers import AutoImageProcessor, AutoModelForImageClassification
+
+scaler=StandardScaler()
 app = Flask(__name__)
 # model = load_model('model.h5')
-pipe = pipeline("image-classification", "gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
+# pipe = pipeline("image-classification", "gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
 # target_img = os.path.join(os.getcwd() , 'static/images')
+processor = AutoImageProcessor.from_pretrained("gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
+model = AutoModelForImageClassification.from_pretrained("gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
 
+lstm_model = load_model('lstm_model.h5',compile=False)
 
 # Connection string
 connection_string = "mongodb+srv://sem6:ssn@cluster0.q0hpe8v.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -84,6 +99,17 @@ def read_image(filename):
     x = preprocess_input(x)
     return x
 
+def calculate_statistics(df):
+    stats = {}
+    for column in df.columns:
+        stats[f'{column}Min'] = df[column].min()
+        stats[f'{column}Max'] = df[column].max()
+        stats[f'{column}Std'] = df[column].std()
+        stats[f'{column}Med'] = df[column].median()
+        stats[f'{column}Avg'] = df[column].mean()
+        stats[f'{column}Skewness'] = skew(df[column])
+        stats[f'{column}Kurtosis'] = kurtosis(df[column])
+    return stats
 
 @app.route('/predict',methods=['GET','POST'])
 def predict():
@@ -107,7 +133,12 @@ def predict():
 
 
             # Make prediction using the model
-            predictions = pipe(image)
+            proc = processor(image, return_tensors="pt")
+            with torch.no_grad():
+                outputs = model(**proc)
+        
+                # Get predicted class
+            predictions = outputs.logits.argmax(-1).item()
 
             # Delete the temporary image file
             image_path.unlink()
@@ -116,23 +147,48 @@ def predict():
             formatted_predictions = []
             maxi = 0
             maxi_label = ""
-            for prediction in predictions:
+            """ for prediction in predictions:
                 label = prediction['label']
                 score = prediction['score']
                 if score > maxi:
                   maxi = score
                   maxi_label = label
                 formatted_prediction = f"{label} => 'score': {score}"
-                formatted_predictions.append(formatted_prediction)
+                formatted_predictions.append(formatted_prediction) """
 
 
             # Apply conditional formatting for 'parkinson' label
-            for i, prediction in enumerate(predictions):
+            """ for i, prediction in enumerate(predictions):
                 if prediction['label'] == 'parkinson' and prediction['score'] > 0.5:
-                    formatted_predictions[i] = f"<span style='color:red'>{formatted_predictions[i]}</span>"
+                    formatted_predictions[i] = f"<span style='color:red'>{formatted_predictions[i]}</span>" """
 
             
-            return render_template('result.html',disease=maxi_label,prob=maxi,user_image=temp_image_path, img_name=file.filename, acc_name=acc.filename)
+            
+            df = pd.read_csv(acc)
+
+            df = df.drop(df.columns[0],axis=1)
+            test_df = calculate_statistics(df)
+            test_df = pd.DataFrame.from_dict(test_df, orient='index').T
+
+            testt_X = test_df.values
+
+            testX_scaled = scaler.fit_transform(testt_X)
+
+            X_test_reshaped = testX_scaled.reshape((testX_scaled.shape[0], 1, testX_scaled.shape[1]))
+            # Predict with the loaded model (example)
+            lstm_model.compile(RMSprop(learning_rate=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
+            test_predictions = lstm_model.predict(X_test_reshaped)
+            #pred_list = test_predictions.to_list()
+            #diseases = ['healthy','parkinsons','huntington\'s','amylotrophic lateral sclerosis']
+            categories = ['healthy', 'parkinson', 'huntington', 'als']
+            label_encoder = LabelEncoder()
+            label_encoder.fit(categories)
+            label_names = label_encoder.classes_
+
+            # Create a dictionary of label name to their probabilities
+            predicted_probabilities = test_predictions[0]
+            label_to_probability = {label: prob for label, prob in zip(label_names, predicted_probabilities)}
+            return render_template('result.html',prob=predictions,user_image=temp_image_path, img_name=file.filename, acc_name=acc.filename, gait=label_to_probability)
             """ filename = file.filename
             file_path = os.path.join('static/images', filename)
             file.save(file_path)
