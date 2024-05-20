@@ -136,7 +136,17 @@ def predict():
             proc = processor(image, return_tensors="pt")
             with torch.no_grad():
                 outputs = model(**proc)
-        
+                '''logits = outputs.logits
+
+                    # Apply softmax to get probabilities
+                    probabilities = F.softmax(logits, dim=-1)
+
+                    # Get the predicted class (optional)
+                    predicted_class = logits.argmax(-1).item()
+
+                # Convert probabilities to a list or other desired format
+                probabilities_list = probabilities.squeeze().tolist()
+'''
                 # Get predicted class
             predictions = outputs.logits.argmax(-1).item()
 
