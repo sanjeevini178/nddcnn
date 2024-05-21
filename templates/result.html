@@ -2,61 +2,91 @@
 <html>
 <head>
   <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <title>NDD DETECTION</title>
-    <link rel="stylesheet" href="static/css/main.css">
-    <script src="main.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <title>NDD DETECTION</title>
+  <link rel="stylesheet" href="static/css/main.css">
+  <script src="main.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <style>
+    .gradient-card {
+      background: rgb(2,0,36);
+background: linear-gradient(15deg, rgba(2,0,36,1) 0%, rgba(60,9,121,1) 47%, rgba(111,36,207,1) 100%);/* Change the gradient colors as needed */
+      color: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .separator {
+      border-right: 2px solid #ddd; /* Change the color as needed */
+    }
 
+    
+  </style>
 </head> 
 
 <body>
   <nav id="navbar" class="container-site">      
-    <ul><div id="navbar-ul">
+    <ul>
+      <div id="navbar-ul">
         <li><h1 style="color:#fff;margin-top: -10px;">NeuroDetect</h1></li>
         <li><a href="{{ url_for('index') }}" style="color:#fff">Home</a></li>
         <li><a href="#about" style="color:#fff">About</a></li>
         <li>
-            <form action="/main" method="post" id="toPredict">
-                <a href="#" onclick="document.getElementById('toPredict').submit();" style="color: #fff;">Predict</a>
-            </form>
-            </li>
-<!--                <li><a href="#gait-predict" style="color:#fff">Gait Analysis</a></li> -->
+          <form action="/main" method="post" id="toPredict">
+            <a href="#" onclick="document.getElementById('toPredict').submit();" style="color: #fff;">Predict</a>
+          </form>
+        </li>
         <li><a href="#footer" style="color:#fff">Contact Us</a></li>
-    </div>
-     </ul>
-</div>
-</nav>
-<br><br>
+      </div>
+    </ul>
+  </nav>
+  
+  <br><br>
   <div class="container">
     <div class="col-lg-12">
-        <center><h1 style="padding:30px;font-weight: 600;font-size: 3.2em">CNN BASED NEURODEGENERATIVE DISEASE GENERATION</h1></center>
-        </div>
-        <div>
-        <div class="col-lg-12">
-            <center><h4>Uploaded: {{ img_name }}</h4>
-       <h4>Uploaded: {{ acc_name }}</h4>
-    </center>
-        </div>
-    <div class="col-lg-5" style="padding-top:30px">
-      <span class="border border-primary">
-        <img src="{{ user_image }}" alt="User Image" class="img-thumbnail" style="width:250px;height:250px;float:right">
-      </span>
+      <center><h1 style="padding:30px;font-weight: 600;font-size: 3.2em">NEURODEGENERATIVE DISEASE DETECTION</h1></center>
     </div>
-    <div class="col-lg-5" style="padding-top:30px">
-      <h4>Might be a <mark style="background-color:#04aa6d;color:white;border-radius:5px"> parkinson's </mark> patient</h4>
-      <h4>Probabilities : {{prob}}</h4>
+    
+    <div class="col-lg-12">
+      <center>
+        <h4>Uploaded: {{ img_name }}</h4>
+        <h4>Uploaded: {{ acc_name }}</h4>
+      </center>
     </div>
-    <div>
-</div>
-    </div class="col-lg-5" style="padding-top:30px">
-    <h4>Gait Results: </h4><br>
-            <h3>{{gait}}</h3>
+    <br>
+    <div class="row">
+      <div class="col-lg-6 separator" style="padding-top:30px">
+        <center>
+          <div class="gradient-card">
+            <h4 style="font-size: 1.8em; font-weight: 800;">Image Results</h4><br>
+            <span class="border border-primary">
+              <img src="{{ user_image }}" alt="User Image" class="img-thumbnail" style="width:250px;height:250px;">
+            </span>
+            <h4>Might be a <mark style="background-color:#04aa6d;color:white;border-radius:5px">{{disease}}</mark> patient</h4>
+            <h4>Probabilities: {{ prob }}</h4>
+          </div>
+        </center>
+      </div>
+      
+      <div class="col-lg-6" style="padding-top:30px">
+        <center>
+          <div class="gradient-card">
+            <h4 style="font-size: 1.8em; font-weight: 800;">Gait Results</h4><br>
+            <ul>
+              <h2>
+                {% for label, probability in gait.items() %}
+                  <li><p style="color:white;"><strong>{{ label }}:</strong> {{ probability|round(2) }}</p></li>
+                {% endfor %}
+              </h2>
+            </ul>
+          </div>
+        </center>
+      </div>
+    </div>
   </div>
-</div>
 </body>
 </html>
