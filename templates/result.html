@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="static/css/main.css">
   <script src="main.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="icon" type="image/png" sizes="16x16" href="static\img\favicon-16x16.png">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <style>
@@ -19,13 +20,24 @@ background: linear-gradient(15deg, rgba(2,0,36,1) 0%, rgba(60,9,121,1) 47%, rgba
       border-radius: 15px;
       padding: 20px;
       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-      height: 56vh;
+      height: 50vh;
     }
     .separator {
       border-right: 2px solid #ddd; /* Change the color as needed */
     }
 
-    
+    .img-thumbnail {
+      width: 200px;
+      height: 200px;
+    }
+    .result-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .result-image {
+      margin-right: 30px;
+    }
   </style>
 </head> 
 
@@ -67,10 +79,10 @@ background: linear-gradient(15deg, rgba(2,0,36,1) 0%, rgba(60,9,121,1) 47%, rgba
           <div class="gradient-card">
             <h4 style="font-size: 1.8em; font-weight: 800;">Image Results</h4><br>
             <span class="border border-primary">
-              <img src="{{ user_image }}" alt="User Image" class="img-thumbnail" style="width:250px;height:250px;">
+              <img src="{{ user_image }}" alt="User Image" class="img-thumbnail" style="width:150px;height:150px;">
             </span>
-            <h4>Might be a <mark style="background-color:#04aa6d;color:white;border-radius:5px">{{disease}}</mark> patient</h4>
-            <h4>Probabilities: {{ prob }}</h4>
+            <h5>Might be a <mark style="background-color:#04aa6d;color:white;border-radius:5px">{{disease}}</mark> patient</h5>
+            <h5>Probabilities: {{ prob }}</h5>
           </div>
         </center>
       </div>

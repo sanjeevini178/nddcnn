@@ -3,6 +3,7 @@ from functools import wraps
 import numpy as np
 import datetime
 import os
+import io
 import torch
 import torch.nn.functional as F
 from PIL import Image
@@ -13,7 +14,7 @@ import pymongo
 from scipy.stats import skew, kurtosis
 import pandas as pd
 import gridfs
-
+from preprocessing import preprocess_gait_data
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION'] = 'python'
@@ -194,7 +195,12 @@ def predict():
                 predicted_class = "Healthy"
             
 
-        df = pd.read_csv(acc)
+        acc_data = acc.read()
+        acc_buffer = io.BytesIO(acc_data)
+
+        preprocessed_data = preprocess_gait_data(acc_buffer)
+        
+        df = preprocessed_data
 
         df = df.drop(df.columns[0], axis=1)
         test_df = calculate_statistics(df)
