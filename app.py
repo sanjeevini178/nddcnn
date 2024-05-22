@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-
+from functools import wraps
 import numpy as np
 import datetime
 import os
@@ -12,6 +12,8 @@ import uuid
 import pymongo
 from scipy.stats import skew, kurtosis
 import pandas as pd
+import gridfs
+
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION'] = 'python'
@@ -23,7 +25,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 # Load model directly
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 
-scaler=StandardScaler()
+scaler = StandardScaler()
 app = Flask(__name__)
 app.secret_key = os.urandom(24).hex()
 print(app.secret_key)
@@ -33,7 +35,7 @@ print(app.secret_key)
 processor = AutoImageProcessor.from_pretrained("gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
 model = AutoModelForImageClassification.from_pretrained("gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
 
-lstm_model = load_model('lstm_model.h5',compile=False)
+lstm_model = load_model('lstm_model.h5', compile=False)
 
 # Connection string
 connection_string = "mongodb+srv://sem6:ssn@cluster0.q0hpe8v.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -48,6 +50,8 @@ db = client['ndd_prediction']
 collection = db['Credentials']
 
 storage = db['storage']
+
+fs = gridfs.GridFS(db)
 
 curr_username = ''
 for document in collection.find():
@@ -67,22 +71,47 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        password=int(password)
+        password = int(password)
         curr_username = username
         if username and password:
             # Query MongoDB for the username and password
             user = collection.find_one({"Username": username, "Password": password})
             
             if user:
-                # If user exists, render the home page template
-                print("sucess")
+                # If user exists, store the user ID in the session and redirect to the index page
+                print("success")
                 session['username'] = username
+                session['user_id'] = str(user['_id'])
+                print(f"User ID: {session['user_id']}")
                 return redirect(url_for('index'))
     
     # If user does not exist or credentials are incorrect, redirect back to the login page
     return render_template('login.html')
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username and password:
+            password = int(password)
+            # Check if the user already exists
+            existing_user = collection.find_one({"Username": username})
+            if existing_user is None:
+                # Add the new user to the MongoDB collection
+                new_user = {"Username": username, "Password": password}
+                result = collection.insert_one(new_user)
+                user_id = str(result.inserted_id)
+                print(f"New user ID: {user_id}")
+                return redirect(url_for('login'))
+            else:
+                error_message = "User already exists. Please try logging in."
+                return render_template('signup.html', error=error_message)
+    return render_template('signup.html')
+
+
 @app.route('/index')  # Define the route URL path
+@login_required
 def index():
     # You can render the index.html template here
     return render_template('index.html')
@@ -92,6 +121,7 @@ def home():
     return render_template('login.html')
 
 @app.route('/main', methods=['POST'])
+@login_required
 def main():
     return render_template('main.html')
 
@@ -158,7 +188,7 @@ def predict():
         image_path.unlink()
 
             # Format the predictions
-        if predicted_class==1:
+        if predicted_class == 1:
                 predicted_class = "Parkinson"
         else:
                 predicted_class = "Healthy"
@@ -189,15 +219,22 @@ def predict():
         max_label = max(label_to_probability, key=label_to_probability.get)
         max_probability = label_to_probability[max_label]
 
-        store = {'Name': session['username'],
-                 'Date': datetime.datetime.now(),
-                 'Drawing': file.filename,
-                 'IMU Data': acc.filename,
-                 'Img Detected': predicted_class,
-                 'Img probability': max(probabilities_list),
-                 'Gait Detected': max_label,
-                 'Gait probability': max_probability
-        }
+        file_id = fs.put(file, filename=file.filename)
+        acc_id = fs.put(acc, filename=acc.filename)
+
+        # Get the username from the session
+        username = session['username']
+
+        store = {
+            'Name': username,
+            'Date': datetime.datetime.now(),
+            'Drawing': file_id,
+            'IMU Data': acc_id,
+            'Img Detected': predicted_class,
+            'Img probability': max(probabilities_list),
+            'Gait Detected': max_label,
+            'Gait probability': max_probability}
+
 
         storage.insert_one(store)
 
@@ -207,7 +244,9 @@ def predict():
     else:
         return "Unable to read the file. Please check file IMGension"
 
+@app.route('/logout')
+def logout():
+    return render_template('login.html')
 
 if __name__ == '__main__':
-  
-    app.run(debug=True,use_reloader=True, port=8000)
+    app.run(debug=True, use_reloader=True, port=8000)

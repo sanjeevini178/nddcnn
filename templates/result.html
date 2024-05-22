@@ -19,6 +19,7 @@ background: linear-gradient(15deg, rgba(2,0,36,1) 0%, rgba(60,9,121,1) 47%, rgba
       border-radius: 15px;
       padding: 20px;
       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      height: 56vh;
     }
     .separator {
       border-right: 2px solid #ddd; /* Change the color as needed */
@@ -41,6 +42,8 @@ background: linear-gradient(15deg, rgba(2,0,36,1) 0%, rgba(60,9,121,1) 47%, rgba
           </form>
         </li>
         <li><a href="#footer" style="color:#fff">Contact Us</a></li>
+        <li><a href="{{ url_for('logout') }}" style="color:#fff">Logout</a></li>
+
       </div>
     </ul>
   </nav>
