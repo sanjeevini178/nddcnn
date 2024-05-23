@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
 from functools import wraps
 import numpy as np
 import datetime
@@ -229,7 +229,6 @@ def predict():
         max_label = max(label_to_probability, key=label_to_probability.get)
         max_probability = label_to_probability[max_label]
 
-        
         # Read the file content into memory before uploading to GridFS
         file_content = file.read()
         acc_content = acc.read()
@@ -250,11 +249,14 @@ def predict():
             'Gait Detected': max_label,
             'Gait probability': max_probability}
 
+
         storage.insert_one(store)
         
         # Generate PDF report
         pdf_path = f'static/reports/report_{uuid.uuid4()}.pdf'
         generate_pdf(pdf_path, username, predicted_class, max(probabilities_list), max_label, max_probability, temp_image_path)
+
+
         return render_template('result.html', disease=predicted_class, prob=max(probabilities_list),
                                user_image=temp_image_path, img_name=file.filename, acc_name=acc.filename,
                                gait=label_to_probability, pdf_report=pdf_path)
