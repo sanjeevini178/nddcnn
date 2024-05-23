@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
 from functools import wraps
 import numpy as np
 import datetime
@@ -15,6 +15,10 @@ from scipy.stats import skew, kurtosis
 import pandas as pd
 import gridfs
 from preprocessing import preprocess_gait_data
+from io import BytesIO
+from bson import ObjectId
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION'] = 'python'
@@ -225,8 +229,12 @@ def predict():
         max_label = max(label_to_probability, key=label_to_probability.get)
         max_probability = label_to_probability[max_label]
 
-        file_id = fs.put(file, filename=file.filename)
-        acc_id = fs.put(acc, filename=acc.filename)
+        # Read the file content into memory before uploading to GridFS
+        file_content = file.read()
+        acc_content = acc.read()
+
+        file_id = fs.put(file_content, filename=file.filename)
+        acc_id = fs.put(acc_content, filename=acc.filename)
 
         # Get the username from the session
         username = session['username']
@@ -243,16 +251,83 @@ def predict():
 
 
         storage.insert_one(store)
+        
+        # Generate PDF report
+        pdf_path = f'static/reports/report_{uuid.uuid4()}.pdf'
+        generate_pdf(pdf_path, username, predicted_class, max(probabilities_list), max_label, max_probability, temp_image_path)
+
 
         return render_template('result.html', disease=predicted_class, prob=max(probabilities_list),
                                user_image=temp_image_path, img_name=file.filename, acc_name=acc.filename,
-                               gait=label_to_probability)
+                               gait=label_to_probability, pdf_report=pdf_path)
     else:
         return "Unable to read the file. Please check file IMGension"
 
 @app.route('/logout')
 def logout():
     return render_template('login.html')
+
+@app.route('/history', methods=['GET'])
+@login_required
+def history():
+    username = session.get('username')
+    # Access the user's collection
+    user_collection = db['storage']
+    # Retrieve all records for the user
+    user_data = list(user_collection.find({"Name": username}))
+    return render_template('history.html', data=user_data)
+
+@app.route('/download/<file_id>')
+@login_required
+def download_file(file_id):
+    try:
+        # Convert file_id to ObjectId
+        file_id = ObjectId(file_id)
+        # Retrieve the file from GridFS using the ObjectId
+        file_data = fs.get(file_id)
+
+        # Debug: Check file data size
+        file_content = file_data.read()
+        print(f"File size: {len(file_content)} bytes")
+
+        # Create a BytesIO object to send the file data
+        file_io = BytesIO(file_content)
+        # Set the file's name and content type
+        filename = file_data.filename
+        content_type = file_data.content_type if file_data.content_type else 'application/octet-stream'
+        
+        # Debug: Log the filename and content type
+        print(f"Downloading file: {filename}, Content Type: {content_type}")
+
+        # Send the file to the client
+        return send_file(file_io, as_attachment=True, download_name=filename, mimetype=content_type)
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": str(e)}), 404
+
+def generate_pdf(pdf_path, username, predicted_class, img_prob, gait_class, gait_prob, image_path):
+    c = canvas.Canvas(pdf_path, pagesize=letter)
+    width, height = letter
+
+    c.setFont("Helvetica", 12)
+    c.drawString(100, height - 50, f"Prediction Report for {username}")
+    c.drawString(100, height - 70, f"Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    c.drawString(100, height - 90, f"Image Detected: {predicted_class}")
+    c.drawString(100, height - 110, f"Image Probability: {img_prob:.2f}")
+    c.drawString(100, height - 130, f"Gait Detected: {gait_class}")
+    c.drawString(100, height - 150, f"Gait Probability: {gait_prob:.2f}")
+
+    # Add the image to the PDF
+    if os.path.exists(image_path):
+        c.drawImage(image_path, 100, height - 400, width=200, height=200)
+
+    c.showPage()
+    c.save()
+
+@app.route('/download_report/<path:filename>', methods=['GET'])
+@login_required
+def download_report(filename):
+    return send_file(filename, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True, port=8000)

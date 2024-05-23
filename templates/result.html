@@ -54,6 +54,7 @@ background: linear-gradient(15deg, rgba(2,0,36,1) 0%, rgba(60,9,121,1) 47%, rgba
           </form>
         </li>
         <li><a href="#footer" style="color:#fff">Contact Us</a></li>
+        <li><a href="{{ url_for('history') }}" style="color:#fff">View History</a></li>
         <li><a href="{{ url_for('logout') }}" style="color:#fff">Logout</a></li>
 
       </div>
@@ -102,6 +103,9 @@ background: linear-gradient(15deg, rgba(2,0,36,1) 0%, rgba(60,9,121,1) 47%, rgba
         </center>
       </div>
     </div>
+    <br>
+    <br>
+    <a href="{{ url_for('download_report', filename=pdf_report) }}">Download Report</a>
   </div>
 </body>
 </html>
