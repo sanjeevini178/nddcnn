@@ -40,7 +40,7 @@ print(app.secret_key)
 processor = AutoImageProcessor.from_pretrained("gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
 model = AutoModelForImageClassification.from_pretrained("gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
 
-lstm_model = load_model('lstm_model.h5', compile=False)
+lstm_model = load_model('lstm_model3.h5', compile=False)
 
 # Connection string
 connection_string = "mongodb+srv://sem6:ssn@cluster0.q0hpe8v.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -199,7 +199,7 @@ def predict():
                 predicted_class = "Healthy"
             
 
-        acc_data = acc.read()
+        """ acc_data = acc.read()
         acc_buffer = io.BytesIO(acc_data)
 
         preprocessed_data = preprocess_gait_data(acc_buffer)
@@ -223,16 +223,56 @@ def predict():
         label_names = label_encoder.classes_
 
         # Create a dictionary of label name to their probabilities
-        predicted_probabilities = np.array([0.2, 0.5, 0.1, 0.2])  # Example predicted probabilities
+        # predicted_probabilities = np.array([0.2, 0.5, 0.1, 0.2])  # Example predicted probabilities
+        predicted_probablities = lstm_model.predict(X_test_reshaped)
+        lstmpred = np.argmax(predicted_probabilities,axis=1)
         label_to_probability = {label: prob for label, prob in zip(label_names, predicted_probabilities)}
+ """
+        acc_data = acc.read()
+        acc_buffer = io.BytesIO(acc_data)
+        df = preprocess_gait_data(acc_buffer)
+        
+        # df = preprocessed_data.drop(preprocessed_data.columns[0], axis=1)
+        print(df)
+        test_df = calculate_statistics(df)
+        test_df = pd.DataFrame.from_dict(test_df, orient='index').T
+
+        print(test_df)
+        testX_scaled = StandardScaler().fit_transform(test_df.values)
+        if testX_scaled.shape[1] != 91:
+            raise ValueError(f"Expected 91 features, but got {testX_scaled.shape[1]} features.")
+    
+        # Reshape the data for LSTM input
+        X_test_reshaped = testX_scaled.reshape((testX_scaled.shape[0], 1, testX_scaled.shape[1]))
+        categories = ['healthy', 'parkinson', 'huntington', 'als']
+        label_encoder = LabelEncoder()
+        label_encoder.fit(categories)
+        label_names = label_encoder.classes_
+
+        predicted_probabilities = lstm_model.predict(X_test_reshaped )
+        lstmpred = np.argmax(predicted_probabilities, axis=1)
+        label_to_probability = {label: prob for label, prob in zip(label_names, predicted_probabilities[0])}
+        gait_probabilities = {label: prob for label, prob in label_to_probability.items()}
+
+        swapped_probabilities = {
+            'als': gait_probabilities['als'],
+            'parkinson': gait_probabilities['healthy'],
+            'huntington': gait_probabilities['huntington'],
+            'healthy': gait_probabilities['parkinson']
+        }
 
         max_label = max(label_to_probability, key=label_to_probability.get)
         max_probability = label_to_probability[max_label]
+        value = np.float32(max_probability)
+        max_probability = float(value)
+
+        print(gait_probabilities)
+        """ max_label = max(label_to_probability, key=label_to_probability.get)
+        max_probability = label_to_probability[max_label] """
 
         # Read the file content into memory before uploading to GridFS
         file_content = file.read()
         acc_content = acc.read()
-
         file_id = fs.put(file_content, filename=file.filename)
         acc_id = fs.put(acc_content, filename=acc.filename)
 
@@ -259,7 +299,7 @@ def predict():
 
         return render_template('result.html', disease=predicted_class, prob=max(probabilities_list),
                                user_image=temp_image_path, img_name=file.filename, acc_name=acc.filename,
-                               gait=label_to_probability, pdf_report=pdf_path)
+                               gait=swapped_probabilities, pdf_report=pdf_path)
     else:
         return "Unable to read the file. Please check file IMGension"
 

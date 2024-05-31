@@ -93,11 +93,11 @@ background: linear-gradient(15deg, rgba(2,0,36,1) 0%, rgba(60,9,121,1) 47%, rgba
           <div class="gradient-card">
             <h4 style="font-size: 1.8em; font-weight: 800;">Gait Results</h4><br>
             <ul>
-              <h2>
+              <h4>
                 {% for label, probability in gait.items() %}
-                  <li><p style="color:white;"><strong>{{ label }}:</strong> {{ probability|round(2) }}</p></li>
+                    <li><p style="color:white;"><strong>{{ label }}:</strong> {{ probability|round(2) }}</p></li>
                 {% endfor %}
-              </h2>
+            </h4>
             </ul>
           </div>
         </center>
