@@ -14,7 +14,7 @@ dnspython==2.6.1
 ez_setup==0.9
 filelock==3.14.0
 Flask==2.0.3
-flatbuffers==24.3.25
+flatbuffers>=1.12
 fpdf==1.7.2
 fsspec==2024.3.1
 gaitmap==2.4.0
