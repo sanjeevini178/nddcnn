@@ -10,5 +10,6 @@ tensorboard==2.10.0
 protobuf==3.19.6
 scikit-learn==1.0.2 
 Werkzeug==2.2.2
+torch==2.2.1
 gaitmap
 gaitmap_mad
