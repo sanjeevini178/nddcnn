@@ -1,7 +1,7 @@
 uuid
 pathlib
 Flask==2.0.3
-numpy==1.21.6
+numpy==1.22
 Pillow==9.0.1
 transformers==4.18.0
 pymongo==4.1.0
