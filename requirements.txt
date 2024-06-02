@@ -56,7 +56,7 @@ pathlib==1.0.1
 Pillow==9.0.1
 platformdirs==4.2.2
 pooch==1.8.1
-protobuf==3.19.6
+protobuf==3.20.3
 psutil==5.9.8
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
