@@ -11,5 +11,5 @@ protobuf==3.19.6
 scikit-learn==1.0.2 
 Werkzeug==2.2.2
 torch==2.2.1
-gaitmap==2.3.0
-gaitmap_mad==2.3.0
+gaitmap==2.4.0
+gaitmap_mad==2.4.0
