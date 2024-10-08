@@ -260,6 +260,8 @@ def predict():
             'huntington': gait_probabilities['huntington'],
             'healthy': gait_probabilities['parkinson']
         }
+        
+        swapped2 = {'parkinson':swapped_probabilities['parkinson'], 'healthy':swapped_probabilities['healthy']}
 
         max_label = max(label_to_probability, key=label_to_probability.get)
         max_probability = label_to_probability[max_label]
@@ -299,7 +301,7 @@ def predict():
 
         return render_template('result.html', disease=predicted_class, prob=max(probabilities_list),
                                user_image=temp_image_path, img_name=file.filename, acc_name=acc.filename,
-                               gait=swapped_probabilities, pdf_report=pdf_path)
+                               gait=swapped2, pdf_report=pdf_path)
     else:
         return "Unable to read the file. Please check file IMGension"
 
