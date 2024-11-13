@@ -19,6 +19,7 @@ from io import BytesIO
 from bson import ObjectId
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from bplot import BPlot
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION'] = 'python'
@@ -57,6 +58,19 @@ collection = db['Credentials']
 storage = db['storage']
 
 fs = gridfs.GridFS(db)
+
+UPLOAD_FOLDER = "./uploads/"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB limit
+
+# Mapping of filenames to video URLs and JSON files
+mapping = {
+    'severe.MOV': ['AlphaPose_severe.mp4', 'alphapose-results-severe.json'],
+    'mild.MOV': ['AlphaPose_mild.mp4', 'alphapose-results-mild.json'],
+    'moderate.MOV': ['AlphaPose_moderate.mp4', 'alphapose-results-moderate.json'],
+    'slight.MOV': ['AlphaPose_slight.mp4', 'alphapose-results-slight.json'],
+    'normal.MOV': ['AlphaPose_normal.mp4', 'alphapose-results-normal.json']
+}
 
 curr_username = ''
 for document in collection.find():
@@ -129,6 +143,11 @@ def home():
 @login_required
 def main():
     return render_template('main.html')
+
+@app.route('/brad', methods=['POST'])
+@login_required
+def brad():
+    return render_template('brad-index.html')
 
 # Allow files with IMGension png, jpg, and jpeg
 ALLOWED_IMG = {'jpg', 'jpeg', 'png'}
@@ -260,6 +279,8 @@ def predict():
             'huntington': gait_probabilities['huntington'],
             'healthy': gait_probabilities['parkinson']
         }
+        
+        swapped2 = {'parkinson':swapped_probabilities['parkinson'], 'healthy':swapped_probabilities['healthy']}
 
         max_label = max(label_to_probability, key=label_to_probability.get)
         max_probability = label_to_probability[max_label]
@@ -299,7 +320,7 @@ def predict():
 
         return render_template('result.html', disease=predicted_class, prob=max(probabilities_list),
                                user_image=temp_image_path, img_name=file.filename, acc_name=acc.filename,
-                               gait=swapped_probabilities, pdf_report=pdf_path)
+                               gait=swapped2, pdf_report=pdf_path)
     else:
         return "Unable to read the file. Please check file IMGension"
 
@@ -368,6 +389,37 @@ def generate_pdf(pdf_path, username, predicted_class, img_prob, gait_class, gait
 @login_required
 def download_report(filename):
     return send_file(filename, as_attachment=True)
+
+@app.route('/upload', methods=["POST"])
+def upload_files():
+    if request.method == 'POST':
+        file = request.files['file']
+        filename = file.filename
+        print(f"Uploading file: {filename}")  # Debug
+        
+        # Check if the uploaded filename exists in the mapping
+        if filename in mapping:
+            video_url = mapping[filename][0]  # Get the mapped video URL
+            return jsonify({'success': True, 'video_url': url_for('video_display', video_url=video_url, videotype=filename)})
+        else:
+            return jsonify({'success': False, 'error': 'File not found in mapping'}), 404
+    return jsonify({'success': False, 'error': 'Invalid request'}), 400
+
+@app.route('/video_display')
+def video_display():
+    videotype = request.args.get('videotype')
+    video_url = request.args.get('video_url')  # Get the video URL
+    print(f"Video URL for display: {video_url}")  # Debug statement
+
+    plotter = BPlot(videotype[:-4])
+    plotter.convert()
+    
+    # Generate Plotly plots for amplitude and speed
+    graph_image = plotter.plot_amplitude()
+    distance_image = plotter.plot_speed()
+
+    severity = plotter.determine_severity()
+    return render_template('video_display.html', video=video_url, graph_image=graph_image, distance_image=distance_image, score=severity)
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True, port=8000)

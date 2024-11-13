@@ -34,20 +34,29 @@
     <header class="container-site ">
         <div class="bgimage">   
             <div class="headsection">
-                <h1 style="color: white; text-align: left;"> Early Detection <br>of Motor Disorder<br> Symptoms</h1>
-                <p style="color: white;">"Utilizing tremor and gait pattern analysis to identify early signs of </br> neurodegenerative diseases, enhancing proactive treatment."</p>
+                <h1 style="color: white; text-align: left;"> Study of <br>Movement Disorder<br> Symptoms</h1>
+                <p style="color: white;">"Leveraging diagnostic tests such as Bradykinesia, Rest Tremor, </br> Gait Analysis, and the Archimedes Spiral to identify signs of </br> neurodegenerative diseases, enhancing proactive treatment."</p>
             </div>
             <!-- <div style="margin-left: 20px;"><img class="doctor" src="https://theembazaar.com/demo/vivotheme/naino-med/assets/images/doctor_banner.png" alt="Doctor" width="400px" >
             </div> -->
             <br><br>
             <div style="margin-top:250px;">
-                <form action="/main" method="post">
-                    <input type="submit" value="Predict" class="bn15">
-                </form>
+                <button onclick="showDialog()" class="bn15">Predict</button>
             </div>
         </div>
     </div>  
     </header>
+
+    <div class="dialog-overlay" id="testDialog">
+        <div class="dialog-box">
+            <button class="close-btn" onclick="closeDialog()">&times;</button>
+            <h2>Select Test</h2>
+            <p>Please select the test you would like to perform:</p>
+            <button class="dialog-button" onclick="submitForm('/main')">Spiral and Gait Test</button>
+            <button class="dialog-button" onclick="submitForm('/brad')">Bradykinesia Test</button>
+        </div>
+    </div>
+
     <section class="container-site">
         
             <div id="about" class="wrapper">
@@ -99,16 +108,16 @@
                     <div class="card">
                         <input type="checkbox" id="card3" class="more" aria-hidden="true">
                         <div class="content">
-                            <div class="front" style="background-image: url('static/img/brain.jpg');">
+                            <div class="front" style="background-image: url('static/img/depth_cam.png');">
                                 <div class="inner">
-                                    <h2>NDD</h2>
+                                    <h2>Depth Camera</h2>
                                 </div>
                             </div>
                             <div class="back">
                                 <div class="inner">
                                     <div class="button-container">
                                         <div class="description">
-                                            <p>Neurodegenerative diseases are conditions characterized by the progressive degeneration of nerve cells in the brain or spinal cord. Early detection of these diseases is crucial for initiating appropriate treatment.</p>
+                                            <p>Intel RealSense Depth Camera D435i provides a precise, non-invasive solution for evaluating motor symptoms (finger tapping and rest tremors).</p>
                                         </div>
                                         
                                     </div>
@@ -153,7 +162,7 @@
             </div>
         </div>
     
-</body>
+
 <footer id="footer">
     <div class="container">
         <div class="row">
@@ -171,4 +180,24 @@
         <p>&copy; 2024 NeuroDetect. All Rights Reserved.</p>
     </div>
 </footer>
+
+<script>
+    // JavaScript to control the dialog box and form submission
+    function showDialog() {
+        document.getElementById("testDialog").style.display = "flex";
+    }
+
+    function closeDialog() {
+        document.getElementById("testDialog").style.display = "none";
+    }
+
+    function submitForm(actionUrl) {
+            const form = document.createElement("form");
+            form.action = actionUrl;
+            form.method = "post";
+            document.body.appendChild(form);
+            form.submit();
+        }
+</script>
+</body>
 </html>

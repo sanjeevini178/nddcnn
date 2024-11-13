@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Video...</title>
+</head>
+<body>
+    <h1>Processing Video...</h1>
+    <div id="loader"></div>
+    <script>
+        // Ensure the fn variable is passed as a string in the final rendered HTML
+        setTimeout(function() {
+            // Redirect to the upload route using the correct filename
+            window.location.href = "{{ url_for('upload', filename=fn) }}";
+        }, 10000); // 10 seconds delay
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Video...</title>
+</head>
+<body>
+    <h1>Processing Video...</h1>
+    <div id="loader"></div>
+    <script>
+        // Ensure the fn variable is passed as a string in the final rendered HTML
+        setTimeout(function() {
+            // Redirect to the upload route using the correct filename
+            window.location.href = "{{ url_for('upload', filename=fn) }}";
+        }, 10000); // 10 seconds delay
+    </script>
+</body>
+</html>

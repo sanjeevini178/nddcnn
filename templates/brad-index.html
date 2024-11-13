@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BradyKinesia Finger Tapping Assessment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.css">
+
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Heading Section */
+        #heading-section {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        #heading-section h1 {
+            font-size: 36px;
+            margin: 0;
+        }
+
+        #heading-section p {
+            font-size: 18px;
+            margin-top: 10px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+            display: inline-block;
+            color: #4CAF50;
+            font-weight: bold;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            max-width: 1050px;
+            margin: 20px auto 0;
+        }
+
+        /* Dropzone and Button Styling */
+        .dropzone {
+            border: 2px dashed #4CAF50;
+            background-color: white;
+            padding: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 50%;
+            margin: 20px auto;
+        }
+
+        .dropzone:hover {
+            background-color: #e8f5e9;
+        }
+
+        #submit-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #submit-btn:hover {
+            background-color: #388e3c;
+        }
+
+        div#loading {
+            width: 35px;
+            height: 35px;
+            display: none;
+            background: url(/static/loadingimage.gif) no-repeat center;
+            cursor: wait;
+        }
+
+        /* Centering content */
+        center {
+            margin: 20px;
+        }
+
+        /* Styling the main content */
+        h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #navbar {
+            background-color: #3c0979;
+            position: fixed;
+            z-index: 100;
+            width: 100%;
+            height: 60px;
+        
+          }
+        
+          #navbar-ul {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            color:#fff;
+          }
+
+          #navbar-ul li {
+            display: inline;
+        }
+
+        #navbar-ul a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+      
+    </style>
+</head>
+<body>
+    <nav id="navbar" class="container-site">      
+        <ul>
+            <div id="navbar-ul">
+                <li><h1 style="color:#fff;margin-top: -10px;">NeuroDetect</h1></li>
+                <li><a href="{{ url_for('index') }}" style="color:#fff">Home</a></li>
+                <li><a href="#about" style="color:#fff">About</a></li>
+                <li>
+                    <form action="/main" method="post" id="toPredict">
+                        <a href="#" onclick="document.getElementById('toPredict').submit();" style="color: #fff;">Predict</a>
+                    </form>
+                </li>
+                <li><a href="#footer" style="color:#fff">Contact Us</a></li>
+                <li><a href="{{ url_for('history') }}" style="color:#fff">View History</a></li>
+                <li><a href="{{ url_for('logout') }}" style="color:#fff">Logout</a></li>
+            </div>
+        </ul>
+    </nav>
+    <!-- Heading Section -->
+    <div id="heading-section">
+        <h1>BradyKinesia Severity Analysis: Tap to Diagnose</h1>
+        <p>The Finger Tapping Test assesses fine motor skills affected by Bradykinesia, a common symptom of Parkinson's disease. Upload a video of your finger tapping exercise, and receive a severity score for early diagnosis and monitoring.</p>
+    </div>
+
+    <!-- Main Content -->
+    <center>
+        <h2>Upload Your Finger Tapping Video</h2>
+        <form id="file-upload-form" enctype="multipart/form-data">
+            <div class="dropzone" id="myDropzone">
+                <div id="dz-message">
+                    <h3>Drag and drop a video file here or click to upload</h3>
+                </div>
+            </div>
+        </form>
+        <button id="submit-btn">Upload Video</button>
+        <div id="loading"></div> <!-- Loading element -->
+    </center>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        Dropzone.autoDiscover = false;
+        var myDropzone = new Dropzone("#myDropzone", {
+            url: "/upload",
+            maxFiles: 1,
+            acceptedFiles: ".mp4, .avi, .mov, .wmv",
+            maxFilesize: 50, // MB
+            uploadMultiple: false,
+            autoProcessQueue: false,
+        });
+
+        myDropzone.on("success", function(file, response) {
+            if (response.success) {
+                window.location.href = response.video_url;  // Redirect to video_display page
+            } else {
+                alert("Error: " + response.error);
+            }
+        });
+
+        myDropzone.on("error", function(file, errorMessage) {
+            console.error("Error uploading file: ", errorMessage);
+            alert("Error: " + errorMessage);
+        });
+
+        document.getElementById("submit-btn").addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (myDropzone.getQueuedFiles().length > 0) {
+                myDropzone.processQueue();
+            } else {
+                alert("Please select a file to upload.");
+            }
+        });
+    </script>
+</body>
+</html>
