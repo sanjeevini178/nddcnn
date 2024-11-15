@@ -15,6 +15,7 @@ from scipy.stats import skew, kurtosis
 import pandas as pd
 import gridfs
 from preprocessing import preprocess_gait_data
+from preprocessing_simtk import preprocess_gait_simtk
 from io import BytesIO
 from bson import ObjectId
 from reportlab.lib.pagesizes import letter
@@ -40,7 +41,7 @@ print(app.secret_key)
 processor = AutoImageProcessor.from_pretrained("gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
 model = AutoModelForImageClassification.from_pretrained("gianlab/swin-tiny-patch4-window7-224-finetuned-parkinson-classification")
 
-lstm_model = load_model('lstm_model3.h5', compile=False)
+lstm_model = load_model('train_model.h5', compile=False)
 
 # Connection string
 connection_string = "mongodb+srv://sem6:ssn@cluster0.q0hpe8v.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -230,48 +231,111 @@ def predict():
  """
         acc_data = acc.read()
         acc_buffer = io.BytesIO(acc_data)
-        df = preprocess_gait_data(acc_buffer)
+        df = preprocess_gait_simtk(acc_buffer)
         
-        # df = preprocessed_data.drop(preprocessed_data.columns[0], axis=1)
-        print(df)
-        test_df = calculate_statistics(df)
-        test_df = pd.DataFrame.from_dict(test_df, orient='index').T
+        def _read_csv(filepath):
+            # Read CSV file without headers
+            return pd.read_csv(filepath, header=None)
 
-        print(test_df)
-        testX_scaled = StandardScaler().fit_transform(test_df.values)
-        if testX_scaled.shape[1] != 91:
-            raise ValueError(f"Expected 91 features, but got {testX_scaled.shape[1]} features.")
+        # Function to load a single test file
+        # This is similar to how training data is loaded but adapted for a single file
+
+        def load_test_file(filepath):
+            COLUMN_NAMES = [
+                'Patient ID number',
+                'Number of total left steps for this trial',
+                'Times of peak angular velocity on left shank',
+                'Left gait cycle (stride time) durations',
+                'Left swing time durations',
+                'Left swing angular ranges',
+                'Peak shank angular velocity (left)',
+                'Freeze index (left accelerometer)',
+                'Left leg identifier',
+                'Number of total right steps for this trial',
+                'Times of peak angular velocity on right shank',
+                'Right gait cycle (stride time) durations',
+                'Right swing time durations',
+                'Right swing angular ranges',
+                'Peak shank angular velocity (right)',
+                'Freeze index (right accelerometer)',
+                'Right leg identifier'
+            ]
+
+            COLUMN_INDICES = {
+                'peak_shank_angular_velocity_left': 6, 'peak_shank_angular_velocity_right': 14,
+                'stride_time_left': 3, 'stride_time_right': 11,
+                'swing_angular_range_left': 5, 'swing_angular_range_right': 13,
+                'freeze_index_left': 7, 'freeze_index_right': 15,
+            }
+
+            # Read and process the CSV file
+            df = filepath
+
+            if df.empty:
+                print(f"File {filepath} was empty or had an issue.")
+                return pd.DataFrame()
+
+            df = df.apply(pd.to_numeric, errors='coerce')
+            processed_data = pd.DataFrame({
+                        'peak_shank_angular_velocity': df.iloc[:, COLUMN_INDICES['peak_shank_angular_velocity_left']].fillna(
+                            df.iloc[:, COLUMN_INDICES['peak_shank_angular_velocity_right']]),
+                        'stride_time': df.iloc[:, COLUMN_INDICES['stride_time_left']].fillna(
+                            df.iloc[:, COLUMN_INDICES['stride_time_right']]),
+                        'swing_angular_range': df.iloc[:, COLUMN_INDICES['swing_angular_range_left']].fillna(
+                            df.iloc[:, COLUMN_INDICES['swing_angular_range_right']]),
+                        'freeze_index': df.iloc[:, COLUMN_INDICES['freeze_index_left']].fillna(
+                            df.iloc[:, COLUMN_INDICES['freeze_index_right']]),
+                    })
+
+            # Calculate arrhythmicity and asymmetry
+            print(processed_data['stride_time'])
+            print(type(processed_data['stride_time']))
+            processed_data['arrhythmicity'] = processed_data['stride_time'].diff().abs()
+            processed_data['asymmetry'] = (df.iloc[:, COLUMN_INDICES['stride_time_left']] -
+                                        df.iloc[:, COLUMN_INDICES['stride_time_right']]).abs()
+
+            # Add previous step's values
+            processed_data['prev_peak_shank_angular_velocity'] = processed_data['peak_shank_angular_velocity'].shift(1)
+            processed_data['prev_stride_time'] = processed_data['stride_time'].shift(1)
+
+            # Drop NaN values (arising from placeholders or previous steps)
+            processed_data.dropna(inplace=True)
+
+            if processed_data.empty:
+                print(f"Processed data from {filepath} resulted in an empty DataFrame after NaN removal.")
+                return pd.DataFrame()
+
+            return processed_data.values
+
+        # Function to predict using the loaded LSTM model
+        def predict_on_test_file(model, test_data):
+            if test_data.size == 0:
+                print("No valid test data available for prediction.")
+                return None
+            test_data = test_data.reshape((test_data.shape[0], 1, test_data.shape[1]))
+
+            predictions = model.predict(test_data)
+            return predictions
+
     
-        # Reshape the data for LSTM input
-        X_test_reshaped = testX_scaled.reshape((testX_scaled.shape[0], 1, testX_scaled.shape[1]))
-        categories = ['healthy', 'parkinson', 'huntington', 'als']
-        label_encoder = LabelEncoder()
-        label_encoder.fit(categories)
-        label_names = label_encoder.classes_
+            # Load the data using the file-like object
+        test_data = load_test_file(df)
+        predictions = predict_on_test_file(lstm_model, test_data)
+        print(predictions)
 
-        predicted_probabilities = lstm_model.predict(X_test_reshaped )
-        lstmpred = np.argmax(predicted_probabilities, axis=1)
-        label_to_probability = {label: prob for label, prob in zip(label_names, predicted_probabilities[0])}
-        gait_probabilities = {label: prob for label, prob in label_to_probability.items()}
+        average_prediction = np.mean(predictions, axis=0)
 
+        # Get the class with the highest average probability
+        collective_prediction = np.argmax(average_prediction)
         swapped_probabilities = {
-            'als': gait_probabilities['als'],
-            'parkinson': gait_probabilities['healthy'],
-            'huntington': gait_probabilities['huntington'],
-            'healthy': gait_probabilities['parkinson']
+            '0':'No PD',
+            '1':'PD (with FoG)',
+            '2':'PD (without FoG)'
         }
         
-        swapped2 = {'parkinson':swapped_probabilities['parkinson'], 'healthy':swapped_probabilities['healthy']}
+        swapped2 = {'No PD':average_prediction[0], 'PD (with FoG)':average_prediction[1], 'PD (without FoG)':average_prediction[2]}
 
-        max_label = max(label_to_probability, key=label_to_probability.get)
-        max_probability = label_to_probability[max_label]
-        value = np.float32(max_probability)
-        max_probability = float(value)
-
-        print(gait_probabilities)
-        """ max_label = max(label_to_probability, key=label_to_probability.get)
-        max_probability = label_to_probability[max_label] """
-
+        
         # Read the file content into memory before uploading to GridFS
         file_content = file.read()
         acc_content = acc.read()
@@ -288,15 +352,15 @@ def predict():
             'IMU Data': acc_id,
             'Img Detected': predicted_class,
             'Img probability': max(probabilities_list),
-            'Gait Detected': max_label,
-            'Gait probability': max_probability}
+            'Gait Detected': int(collective_prediction),  # Convert to int
+    'Gait probability': float(average_prediction[int(collective_prediction)])}  # Convert to float
 
 
         storage.insert_one(store)
         
         # Generate PDF report
         pdf_path = f'static/reports/report_{uuid.uuid4()}.pdf'
-        generate_pdf(pdf_path, username, predicted_class, max(probabilities_list), max_label, max_probability, temp_image_path)
+        generate_pdf(pdf_path, username, predicted_class, max(probabilities_list), collective_prediction, average_prediction[collective_prediction], temp_image_path)
 
 
         return render_template('result.html', disease=predicted_class, prob=max(probabilities_list),
